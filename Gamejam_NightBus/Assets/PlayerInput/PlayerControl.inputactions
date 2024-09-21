@@ -1,0 +1,128 @@
+{
+    "name": "PlayerControl",
+    "maps": [
+        {
+            "name": "BusController",
+            "id": "29ade081-895e-4f43-9ab2-17bd57daa286",
+            "actions": [
+                {
+                    "name": "OpenBusController",
+                    "type": "Button",
+                    "id": "eb476bf0-03b0-40e6-be1c-301beeeab294",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DriverView",
+                    "type": "Button",
+                    "id": "b0379045-7116-468d-b80d-065cf4e951aa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ConfirmButton",
+                    "type": "Button",
+                    "id": "5afa0a49-0804-4755-90e3-0d2c49e313d4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CancelButton",
+                    "type": "Button",
+                    "id": "18871821-dddb-4219-a978-c059ce13b319",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4e1cfd14-af0a-4683-83ee-0fb5f778b640",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyBoard",
+                    "action": "OpenBusController",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4f65c88f-552c-4dcc-aaa5-ad52a0708fc5",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DriverView",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b6d87ea-cfd7-4297-b340-0e0cccf36b45",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConfirmButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a9fa1640-583d-4d95-992d-8efc7304105d",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CancelButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GameStartPhase",
+            "id": "033a6f86-cba6-469f-ba0a-85e36a910d35",
+            "actions": [
+                {
+                    "name": "Start",
+                    "type": "Button",
+                    "id": "6475f340-e088-42b1-b073-d527da1940a5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6c6b1bd5-e970-4087-a712-2ff337f6fd75",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "KeyBoard",
+            "bindingGroup": "KeyBoard",
+            "devices": []
+        }
+    ]
+}
