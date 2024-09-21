@@ -11,6 +11,8 @@ public class BusControllerButton : MonoBehaviour
     public Button hornButton;
     public Button kickButton;
     public Button musicButton;
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -37,8 +39,15 @@ public class BusControllerButton : MonoBehaviour
 
     private void MusicButtonFunc()
     {
-
-        GameRoot.GetInstance().MusicOn();
+        if (GameRoot.GetInstance().musicOn)
+        {
+            GameRoot.GetInstance().MusicOff();
+        }
+        else
+        {
+            GameRoot.GetInstance().MusicOn();
+        }
+        GameRoot.GetInstance().ButtonLightState();
     }
 
     private void KickButtonFunc()
@@ -54,7 +63,16 @@ public class BusControllerButton : MonoBehaviour
 
     private void AirConditionButtonFunc()
     {
-        GameRoot.GetInstance().AirConditionOn();
+        if (GameRoot.GetInstance().airConditionOn)
+        {
+            GameRoot.GetInstance().AirConditionOff();
+            
+        }
+        else
+        {
+            GameRoot.GetInstance().AirConditionOn();
+        }
+        GameRoot.GetInstance().ButtonLightState();
     }
 
     // Update is called once per frame

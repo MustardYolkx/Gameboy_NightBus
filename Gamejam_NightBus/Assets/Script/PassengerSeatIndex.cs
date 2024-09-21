@@ -12,9 +12,11 @@ public class PassengerSeatIndex : MonoBehaviour
     public int minTurn;
 
     public int targetTurn;
+    public string currentAnimState;
     // Start is called before the first frame update
     void Start()
     {
+        DetermineMaxMinTurn();
         SetMaxTurn();
     }
 
@@ -22,6 +24,10 @@ public class PassengerSeatIndex : MonoBehaviour
     void Update()
     {
         
+    }
+    private void OnEnable()
+    {
+        GetComponent<Animator>().SetTrigger(currentAnimState);
     }
     public void DetermineMaxMinTurn()
     {
@@ -44,7 +50,17 @@ public class PassengerSeatIndex : MonoBehaviour
 
     public void BeKickedOut()
     {
-        Destroy(gameObject);
+        
+         GetComponent<Animator>().SetBool("BeKicked",true);
+        
+        
+    }
+    public void BeKickedAnimFun()
+    {
+         if (thisPassenger.Type == PassengerType.HumanBeing)
+        {
+            Destroy(gameObject);
+        }
     }
     public void NormalGhostKicked()
     {
@@ -53,6 +69,7 @@ public class PassengerSeatIndex : MonoBehaviour
 
     public void IsTurnToGetOff()
     {
+        turnOnBus++;
         if(thisPassenger.Type == PassengerType.HumanBeing)
         {
             if(turnOnBus == targetTurn)
