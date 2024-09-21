@@ -73,12 +73,20 @@ public class InputManager : MonoBehaviour
         busControllerActions.OpenBusController.started += OpenBusControlller;
         busControllerActions.DriverView.started += OnDriverView;
         busControllerActions.ConfirmButton.started += OnConfirmButtonPress;
-        busControllerActions.CancelButton.started += OnCancelButtonPress;
+        
 
         gameStartPhaseActions.Start.started += OnGameStart;
     }
 
 
+    public void AddCancelButtonCallBack()
+    {
+        busControllerActions.CancelButton.started += OnCancelButtonPress;
+    }
+    public void RemoveCancelButtonCallBack()
+    {
+        busControllerActions.CancelButton.started -= OnCancelButtonPress;
+    }
 
     public void RemoveInputActionCallBacks()
     {
@@ -97,7 +105,8 @@ public class InputManager : MonoBehaviour
     }
     private void OnCancelButtonPress(InputAction.CallbackContext obj)
     {
-        PressButton();
+        GameRoot.GetInstance().KickOutSubMenuClose();
+        RemoveCancelButtonCallBack();
     }
 
     private void OnConfirmButtonPress(InputAction.CallbackContext obj)

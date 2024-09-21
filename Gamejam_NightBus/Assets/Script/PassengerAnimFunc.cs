@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -30,6 +31,23 @@ public class PassengerAnimFunc : MonoBehaviour
         //GameRoot.GetInstance().OnBusPassengerOBJList(true, gameObject);
     }
 
+    public void BeKicked()
+    {
+        if(thisPassenger.Type == PassengerType.HumanBeing)
+        {
+            //GameRoot.GetInstance().KickOffPassengerOnDriverView();
+            GameRoot.GetInstance().GameOver(1);
+            Destroy(gameObject);
+        }
+        else if (thisPassenger.Type == PassengerType.NormalGhost)
+        {
+            Destroy(gameObject);
+            GameRoot.GetInstance().ClearNextStopPassenger();
+            GameRoot.GetInstance().StartDriving();
+            GameRoot.GetInstance().BusControllerPage();
+        }
+        
+    }
     public void TurnOffKickButton()
     {
         GameRoot.GetInstance().TurnOffKickButton();

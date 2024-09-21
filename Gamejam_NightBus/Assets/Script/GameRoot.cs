@@ -46,6 +46,7 @@ public class GameRoot : MonoBehaviour
     #endregion
 
     #region UI Menu
+   
     public GameObject busControllerMenu;
     public GameObject busControllerMenuFirst;
 
@@ -64,7 +65,9 @@ public class GameRoot : MonoBehaviour
     public GameObject passengerChoseMenu;
     public List<Button> passengerChoseList;
 
+    public GameObject end1;
     public GameObject end2;
+    
     #endregion
 
     #region Game Loop
@@ -98,9 +101,9 @@ public class GameRoot : MonoBehaviour
         //Debug.Log(Passenger_Dic.passengers[0].prafabPath);
 
         //Debug.Log(SerchForHumanbeing()[0].passengerName);
-        
-        //SerchForType(PassengerType.HumanBeing);
 
+        //SerchForType(PassengerType.HumanBeing);
+        
         startPage.SetActive(true);
         busControllerMenu.SetActive(false);
         driverViewMenu.SetActive(false);
@@ -109,8 +112,7 @@ public class GameRoot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AC_Light.GetComponent<Animator>().SetBool("LightOn", airConditionOn);
-        Music_Light.GetComponent<Animator>().SetBool("LightOn", airConditionOn);
+       
     }
     #region setting
 
@@ -231,7 +233,9 @@ public class GameRoot : MonoBehaviour
         foreach(GameObject obj in NextStopPassOBJ_List)
         {
             Destroy(obj);
+            
         }
+        NextStopPassOBJ_List.Clear();
     }
     #endregion
 
@@ -262,9 +266,9 @@ public class GameRoot : MonoBehaviour
             }
             
         }
-        
-        
+          
     }
+
     IEnumerator PassengerWalk(GameObject pa, int index)
     {
         while (Vector2.Distance(pa.transform.position, busSeatPos[index].position) > 0.2f)
@@ -275,8 +279,8 @@ public class GameRoot : MonoBehaviour
         }
         if(pa.GetComponent<Animator>() != null)
         {
-
             pa.GetComponent<Animator>().SetTrigger("Sit");
+            pa.GetComponent<PassengerSeatIndex>().currentAnimState = "Sit";
         }
     }
     public void GeneratePassengerOnStop(bool randomType,PassengerType type)
@@ -346,14 +350,38 @@ public class GameRoot : MonoBehaviour
         
               
     }
+
+    public void PlayPassengerKickAni()
+    {
+        NextStopPassOBJ_List[0].GetComponent<Animator>().SetTrigger("BeKicked");
+    }
     public void KickOffPassengerOnDriverView()
     {
         
-         ClearNextStopPassenger();
+        ClearNextStopPassenger();
         currentWalkPassenger= null;
+
+        BusControllerPage();
+        StartDriving();
+
+    }
+
+
+    private void CheckAllPassengerState()
+    {
+        if(OnBusPassOBJ_Dic.Count> 0)
+        {
+            for (int i = 0; i < canSit.Count; i++)
+            {
+                if (OnBusPassOBJ_Dic.ContainsKey(i))
+                {
+                    OnBusPassOBJ_Dic[i].GetComponent<PassengerSeatIndex>().IsTurnToGetOff();
+                }
+                
+            }
+        }
         
-
-
+                        
     }
     #endregion
     public void SwitchViewToDriver()
@@ -383,6 +411,7 @@ public class GameRoot : MonoBehaviour
     {
         busControllerMenu.SetActive(true);
         driverViewMenu.SetActive(false);
+        ButtonLightState();
         TurnOnPassengerOnDriverView();
         if (NextStopPassenger_List.Count > 0)
         {
@@ -400,15 +429,20 @@ public class GameRoot : MonoBehaviour
 
     public void DriverViewPage()
     {
+
         driverViewMenu.SetActive(true);
         busControllerMenu.SetActive(false);
+        
         TurnOnKickButton();
         TurnOffPassengerOnDriverView();
         //InputManager.Instance.busControllerActions.DriverView.Enable();
         stopIndex++;
-        
+        CheckAllPassengerState();
         EventSystem.current.SetSelectedGameObject(driverViewMenuFirst);
     }
+
+    
+
     public void TurnOffPassengerOnDriverView()
     {
         if(OnBusPassOBJ_Dic.Count>0)
@@ -435,12 +469,34 @@ public class GameRoot : MonoBehaviour
     {
         passengerChoseMenu.SetActive(true);
         
+        InputManager.Instance.AddCancelButtonCallBack();
+        Navigation nav = new Navigation();
+        nav.mode = Navigation.Mode.Explicit;
         for(int i= 0; i< passengerChoseList.Count;i++)
         {
             if (OnBusPassOBJ_Dic.ContainsKey(i))
             {
                 passengerChoseList[i].gameObject.SetActive(true);
+                for(int c = 0; c < passengerChoseList.Count; c++)
+                {
+                    if (c < i)
+                    {
+                        if (OnBusPassOBJ_Dic.ContainsKey(c))
+                        {
 
+                            nav.selectOnRight = passengerChoseList[c];
+                        }
+                    }
+                    else if (c > i)
+                    {
+                        if (OnBusPassOBJ_Dic.ContainsKey(c))
+                        {
+
+                            nav.selectOnLeft = passengerChoseList[c];
+                        }
+                    }  
+                }
+                passengerChoseList[i].navigation = nav;
             }
             else
             {
@@ -496,7 +552,11 @@ public class GameRoot : MonoBehaviour
     #endregion
 
     #region Bus Environment Bool
-
+    public void ButtonLightState()
+    {
+        AC_Light.GetComponent<Animator>().SetBool("LightOn", airConditionOn);
+        Music_Light.GetComponent<Animator>().SetBool("LightOn", musicOn);
+    }
     public void AirConditionOn()
     {
         airConditionOn = true;
@@ -530,9 +590,15 @@ public class GameRoot : MonoBehaviour
         //Player complete the game, happy ending
 
         //Player was complained by the company, game over
-
+        if (i == 1)
+        {
+            GenerateUIPage(end1);
+            Button b = end1.GetComponentInChildren<Button>();
+            b.onClick.AddListener(() => ReStart());
+            EventSystem.current.SetSelectedGameObject(b.gameObject);
+        }
         //Player killed by the ghost, game over
-        if(i==2)
+        else if (i==2)
         {
             GenerateUIPage(end2);
             Button b = end2.GetComponentInChildren<Button>();

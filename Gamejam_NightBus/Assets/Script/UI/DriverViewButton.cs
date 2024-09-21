@@ -37,9 +37,9 @@ public class DriverViewButton : MonoBehaviour
         //Play Animation
 
         //Turn to Bus side view
-        GameRoot.GetInstance().KickOffPassengerOnDriverView();
-        GameRoot.GetInstance().BusControllerPage();
-        GameRoot.GetInstance().StartDriving();
+        GameRoot.GetInstance().PlayPassengerKickAni();
+
+
     }
 
     public void SteeringWheelFunc()
