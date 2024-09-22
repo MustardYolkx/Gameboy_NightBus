@@ -452,6 +452,7 @@ public class GameRoot : MonoBehaviour
     }
     public void BusControllerPage()
     {
+        MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busEngine);
         busControllerMenu.SetActive(true);
         driverViewMenu.SetActive(false);
         ButtonLightState();
@@ -472,7 +473,7 @@ public class GameRoot : MonoBehaviour
 
     public void DriverViewPage()
     {
-
+        MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.getOnBus);
         driverViewMenu.SetActive(true);
         busControllerMenu.SetActive(false);
         HornOff();
@@ -701,6 +702,7 @@ public class GameRoot : MonoBehaviour
     {
         StartGamePageOff();
         BusControllerPage();
+        MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busStop);
         yield return new WaitForSeconds(1);
         InputManager.Instance.busControllerActions.Enable();
         DriverViewPage();
@@ -714,6 +716,9 @@ public class GameRoot : MonoBehaviour
     IEnumerator DrivingProcess()
     {
         yield return new WaitForSeconds(8);
+
+        MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busStop);
+        
         CheckAllPassengerState();
         yield return new WaitForSeconds(2);
         DriverViewPage();

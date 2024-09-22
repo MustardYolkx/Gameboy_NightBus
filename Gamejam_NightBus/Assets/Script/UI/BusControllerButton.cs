@@ -59,10 +59,12 @@ public class BusControllerButton : MonoBehaviour
     private void HornButtonFunc()
     {
         GameRoot.GetInstance().HornOn();
+        
     }
 
     private void AirConditionButtonFunc()
     {
+        MusicManager.Instance.ChangeSFXLayer1Sound(MusicManager.Instance.normalButtonPress);
         if (GameRoot.GetInstance().airConditionOn)
         {
             GameRoot.GetInstance().AirConditionOff();
