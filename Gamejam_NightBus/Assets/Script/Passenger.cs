@@ -8,6 +8,7 @@ public class Passenger
     public string passengerName;
     public int id;
     public PassengerType Type;
+    public PowerfulGhostNeed ghostNeed;
     public string prafabPath;
     public Passenger()
     {
