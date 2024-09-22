@@ -148,4 +148,5 @@ public enum PowerfulGhostNeed
     Music,
     AirCondition,
     Horn,
+    Talk,
 }

@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Human2 : Passenger
+public class Human4 : Passenger
 {
-    private string name = "Gay";
-    private string path = "HumanBeing/Human2";
-    public Human2() : base()
+    private string name = "Alice";
+    private string path = "HumanBeing/Human4";
+    public Human4() : base()
     {
         passengerName = this.name;
         prafabPath = path;
