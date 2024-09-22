@@ -29,6 +29,7 @@ public class Passenger_Dictionary
         {
             {0,new Human0() },
             {1,new NormalGhost0()},
+            {2,new PowerfulGhost0()},
             //{1,new Human1() }
         };
     }

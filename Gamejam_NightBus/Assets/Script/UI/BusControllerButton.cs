@@ -58,7 +58,7 @@ public class BusControllerButton : MonoBehaviour
 
     private void HornButtonFunc()
     {
-        throw new NotImplementedException();
+        GameRoot.GetInstance().HornOn();
     }
 
     private void AirConditionButtonFunc()

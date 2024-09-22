@@ -13,6 +13,10 @@ public class PassengerSeatIndex : MonoBehaviour
 
     public int targetTurn;
     public string currentAnimState;
+
+    public bool isNeedMeet;
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -23,7 +27,7 @@ public class PassengerSeatIndex : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        GhostNeedCheck();
     }
     private void OnEnable()
     {
@@ -58,7 +62,17 @@ public class PassengerSeatIndex : MonoBehaviour
     public void BeKickedAnimFun()
     {
          if (thisPassenger.Type == PassengerType.HumanBeing)
+         {
+             GameRoot.GetInstance().GameOver(1);
+             Destroy(gameObject);
+         }
+         else if (thisPassenger.Type == PassengerType.NormalGhost)
+         {
+             Destroy(gameObject);
+         }
+        else
         {
+            GameRoot.GetInstance().canStopAdd = false;
             Destroy(gameObject);
         }
     }
@@ -67,15 +81,31 @@ public class PassengerSeatIndex : MonoBehaviour
 
     }
 
+    public void GetOffAnimFunc()
+    {
+        if(thisPassenger.Type!= PassengerType.HumanBeing)
+        {
+
+            GameRoot.GetInstance().PassengerGetOffSideView();
+            GameRoot.GetInstance().OnBusPassengerDic(false, seatIndex, thisPassenger);
+            GameRoot.GetInstance().OnBusPassengerOBJList(false, seatIndex, this.gameObject);
+        }
+        else if (thisPassenger.Type != PassengerType.PowerfulGhost)
+        {
+            GameRoot.GetInstance().OnBusPassengerDic(false, seatIndex, thisPassenger);
+            GameRoot.GetInstance().OnBusPassengerOBJList(false, seatIndex, this.gameObject);
+        }
+    }
     public void IsTurnToGetOff()
     {
-        turnOnBus++;
+        
         if(thisPassenger.Type == PassengerType.HumanBeing)
         {
-            if(turnOnBus == targetTurn)
+            turnOnBus++;
+            if (turnOnBus == targetTurn)
             {
-                GameRoot.GetInstance().OnBusPassengerDic(false, seatIndex, thisPassenger);
-                GameRoot.GetInstance().OnBusPassengerOBJList(false, seatIndex, this.gameObject);
+                GetComponent<Animator>().SetTrigger("GetOff");
+                
             }
         }
         else if(thisPassenger.Type == PassengerType.NormalGhost)
@@ -84,7 +114,38 @@ public class PassengerSeatIndex : MonoBehaviour
         }
         else
         {
+            if(isNeedMeet)
+            {
+                GameRoot.GetInstance().OnBusPassengerDic(false, seatIndex, thisPassenger);
+                GameRoot.GetInstance().OnBusPassengerOBJList(false, seatIndex, this.gameObject);
+            }
+            else
+            {
 
+            }
         }
     }
+    public void GhostNeedCheck()
+    {
+        if(thisPassenger.ghostNeed== PowerfulGhostNeed.Music)
+        {
+            isNeedMeet = GameRoot.GetInstance().musicOn;
+        }
+        if(thisPassenger.ghostNeed == PowerfulGhostNeed.AirCondition)
+        {
+            isNeedMeet = GameRoot.GetInstance().airConditionOn;
+        }
+        if(thisPassenger.ghostNeed == PowerfulGhostNeed.Horn)
+        {
+            isNeedMeet = GameRoot.GetInstance().hornOn;
+        }
+    }
+
+}
+public enum PowerfulGhostNeed
+{
+    None,
+    Music,
+    AirCondition,
+    Horn,
 }

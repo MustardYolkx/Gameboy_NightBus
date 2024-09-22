@@ -46,6 +46,15 @@ public class PassengerAnimFunc : MonoBehaviour
             GameRoot.GetInstance().StartDriving();
             GameRoot.GetInstance().BusControllerPage();
         }
+        else
+        {
+            Destroy(gameObject);
+            GameRoot.GetInstance().canStopAdd = false;
+            
+            GameRoot.GetInstance().ClearNextStopPassenger();
+            GameRoot.GetInstance().StartDriving();
+            GameRoot.GetInstance().BusControllerPage();
+        }
         
     }
     public void TurnOffKickButton()

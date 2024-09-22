@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -39,6 +40,8 @@ public class GameRoot : MonoBehaviour
     public Transform WalkToSeatPos;
 
     public GameObject onBusPassenger;
+    public GameObject passengerGetOff;
+    public Transform passengerGetOffPos;
     public Passenger currentWalkPassenger;
     public bool passengerGetOn;
 
@@ -67,15 +70,17 @@ public class GameRoot : MonoBehaviour
 
     public GameObject end1;
     public GameObject end2;
-    
+
     #endregion
 
     #region Game Loop
+    public bool canStopAdd = true;
     public int stopIndex = 0;
     #endregion
     #region Environment Bool
     public bool airConditionOn = false;
     public bool musicOn = false;
+    public bool hornOn = false;
     #endregion
     private void Awake()
     {
@@ -248,7 +253,10 @@ public class GameRoot : MonoBehaviour
     public void GenerateSideViewPassenger(Passenger p)
     {
         GameObject pa = Instantiate(onBusPassenger, WalkToSeatPos.position,Quaternion.identity);
-        
+        if(p.Type == PassengerType.PowerfulGhost)
+        {
+            canStopAdd = true;
+        }
         for(int i = 0; i < 50; i++)
         {
             int index = UnityEngine.Random.Range(0, canSit.Count);
@@ -268,7 +276,10 @@ public class GameRoot : MonoBehaviour
         }
           
     }
-
+    public void PassengerGetOffSideView()
+    {
+        Instantiate(passengerGetOff, passengerGetOff.transform.position, Quaternion.identity);
+    }
     IEnumerator PassengerWalk(GameObject pa, int index)
     {
         while (Vector2.Distance(pa.transform.position, busSeatPos[index].position) > 0.2f)
@@ -296,30 +307,49 @@ public class GameRoot : MonoBehaviour
         }
         else if (type == PassengerType.PowerfulGhost)
         {
-            for (int c = 0; c < 30; c++)
+            List<Passenger> passes = SerchForType(type);
+            if (canStopAdd)
             {
-                if (SerchForType(type).Count > 0)
+                for (int c = 0; c < 30; c++)
                 {
-                    int i = UnityEngine.Random.Range(0, SerchForType(type).Count);
-                    if (AppearedPowerfulGhost.Contains(SerchForType(type)[i]))
+                    if (passes.Count > 0)
                     {
-                        continue;
-                    }
-                    else
-                    {
-                        AppearedPowerfulGhost.Add(SerchForType(type)[i]);
-                        GameObject pa = Resources.Load<GameObject>(SerchForType(type)[i].prafabPath);
-                        NextStopPassengerList(true, SerchForType(type)[i]);
-                        GameObject passenger = Instantiate(pa, GetOnPos.position, Quaternion.identity);
-                        if (passenger.GetComponent<PassengerAnimFunc>() != null)
+                        int i = UnityEngine.Random.Range(0, passes.Count);
+
+                        if (AppearedPowerfulGhost.Contains(passes[i]))
                         {
-                            passenger.GetComponent<PassengerAnimFunc>().SetPassenger(SerchForType(type)[i]);
+                            continue;
                         }
-                        NextStopPassOBJ_List.Add(passenger);
-                        break;
+                        else
+                        {
+                            AppearedPowerfulGhost.Add(passes[i]);
+                            GameObject pa = Resources.Load<GameObject>(passes[i].prafabPath);
+                            NextStopPassengerList(true, passes[i]);
+                            GameObject passenger = Instantiate(pa, GetOnPos.position, Quaternion.identity);
+                            if (passenger.GetComponent<PassengerAnimFunc>() != null)
+                            {
+                                passenger.GetComponent<PassengerAnimFunc>().SetPassenger(passes[i]);
+                            }
+                            NextStopPassOBJ_List.Add(passenger);
+                            break;
+                        }
                     }
+
                 }
 
+
+            }
+            else
+            {
+                GameObject pa = Resources.Load<GameObject>(AppearedPowerfulGhost.Last().prafabPath);
+                NextStopPassengerList(true, AppearedPowerfulGhost.Last());
+                GameObject passenger = Instantiate(pa, GetOnPos.position, Quaternion.identity);
+                if (passenger.GetComponent<PassengerAnimFunc>() != null)
+                {
+                    passenger.GetComponent<PassengerAnimFunc>().SetPassenger(AppearedPowerfulGhost.Last());
+                }
+                NextStopPassOBJ_List.Add(passenger);
+                
             }
 
         }
@@ -342,6 +372,7 @@ public class GameRoot : MonoBehaviour
     {
         if (OnBusPassOBJ_Dic.ContainsKey(i))
         {
+
             OnBusPassOBJ_Dic[i].GetComponent<PassengerSeatIndex>().BeKickedOut();
             OnBusPassenger_Dic.Remove(i);
             OnBusPassOBJ_Dic.Remove(i);
@@ -399,6 +430,18 @@ public class GameRoot : MonoBehaviour
         //Enable the bus controller
         //Disable the driver view button
     }
+    public void CheckCanStopAdd()
+    {
+        if (canStopAdd)
+        {
+            stopIndex++;
+        }
+        else
+        {
+            
+        }
+    }
+
 
     #region ChangeBusMenu
 
@@ -432,12 +475,13 @@ public class GameRoot : MonoBehaviour
 
         driverViewMenu.SetActive(true);
         busControllerMenu.SetActive(false);
-        
+        HornOff();
         TurnOnKickButton();
         TurnOffPassengerOnDriverView();
         //InputManager.Instance.busControllerActions.DriverView.Enable();
-        stopIndex++;
-        CheckAllPassengerState();
+        CheckCanStopAdd();
+
+
         EventSystem.current.SetSelectedGameObject(driverViewMenuFirst);
     }
 
@@ -468,6 +512,7 @@ public class GameRoot : MonoBehaviour
     public void KickOutSubMenu()
     {
         passengerChoseMenu.SetActive(true);
+        Kick_Light.GetComponent<Animator>().SetBool("LightOn", true);
         
         InputManager.Instance.AddCancelButtonCallBack();
         Navigation nav = new Navigation();
@@ -524,6 +569,7 @@ public class GameRoot : MonoBehaviour
         }
         passengerChoseMenu.SetActive(false);
         EnableBusControlPage();
+        Kick_Light.GetComponent<Animator>().SetBool("LightOn", false);
     }
     public void DisableBusControlPage()
     {
@@ -577,9 +623,16 @@ public class GameRoot : MonoBehaviour
         musicOn= false;
     }
 
-    public void HornPressed()
+    public void HornOn()
     {
+        hornOn= true;
+        Horn_Light.GetComponent<Animator>().SetTrigger("LightOn");
+        
+    }
 
+    public void HornOff()
+    {
+        hornOn = false;
     }
     #endregion
     public void GameOver(int i)
@@ -661,6 +714,8 @@ public class GameRoot : MonoBehaviour
     IEnumerator DrivingProcess()
     {
         yield return new WaitForSeconds(8);
+        CheckAllPassengerState();
+        yield return new WaitForSeconds(2);
         DriverViewPage();
         GenerateArrangement();
     }
@@ -678,9 +733,9 @@ public class GameRoot : MonoBehaviour
 
     public void GenerateArrangement()
     {
-        List<int> humanStop = new List<int> { 1,2,6,9,11,13,16,17,19,20 };
-        List<int> normalGhostStop = new List<int> { 3, 4, 7,10,14 ,18};
-        List<int> powerfulGhostStop = new List<int> { 5, 8, 12, 15 };
+        List<int> humanStop = new List<int> { 1,4,6,9,11,13,16,17,19,20 };
+        List<int> normalGhostStop = new List<int> {2,   7,10,14 ,18};
+        List<int> powerfulGhostStop = new List<int> {3, 5, 8, 12, 15 };
 
         if(humanStop.Contains(stopIndex))
         {
@@ -690,7 +745,7 @@ public class GameRoot : MonoBehaviour
         {
             GeneratePassengerOnStop(false, PassengerType.NormalGhost);
         }
-        else
+        else if(powerfulGhostStop.Contains(stopIndex))
         {
             GeneratePassengerOnStop(false, PassengerType.PowerfulGhost);
         }
