@@ -67,4 +67,14 @@ public class PassengerAnimFunc : MonoBehaviour
         GameRoot.GetInstance().GameOver(2);
         Destroy(gameObject);
     }
+
+    public void PlayCoinSound()
+    {
+        MusicManager.Instance.ChangeSFXLayer1Sound(MusicManager.Instance.Coin);
+    }
+
+    public void PlayStepSound()
+    {
+        MusicManager.Instance.ChangeSFXLayer1Sound(MusicManager.Instance.pasengerStep);
+    }
 }
