@@ -27,4 +27,5 @@ public enum PassengerType
     HumanBeing,
     NormalGhost,
     PowerfulGhost,
+    SpecialGhost,
 }

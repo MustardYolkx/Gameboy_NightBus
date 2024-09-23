@@ -42,6 +42,7 @@ public class Passenger_Dictionary
             {12,new PowerfulGhost1()},
             {13,new PowerfulGhost2()},
             {14,new PowerfulGhost3()},
+            {15,new SpecialGhost()},
             //{1,new Human1() }
         };
     }

@@ -18,23 +18,28 @@ public class PassengerChoseButtonFunc : MonoBehaviour
         seat0.onClick.AddListener(() =>
         {
             Seat0ButtonFunc();
+            GameRoot.GetInstance().TurnOffBusControlButton();
         });
 
         seat1.onClick.AddListener(() =>
         {
             Seat1ButtonFunc();
+            GameRoot.GetInstance().TurnOffBusControlButton();
         });
         seat2.onClick.AddListener(() =>
         {
             Seat2ButtonFunc();
+            GameRoot.GetInstance().TurnOffBusControlButton();
         });
         seat3.onClick.AddListener(() =>
         {
             Seat3ButtonFunc();
+            GameRoot.GetInstance().TurnOffBusControlButton();
         });
         seat4.onClick.AddListener(() =>
         {
             Seat4ButtonFunc();
+            GameRoot.GetInstance().TurnOffBusControlButton();
         });
     }
 
