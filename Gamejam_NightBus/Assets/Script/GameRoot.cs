@@ -775,10 +775,10 @@ public class GameRoot : MonoBehaviour
 
     public void GenerateArrangement()
     {
-        List<int> humanStop = new List<int> { 1,9,13,17,19,20 };
-        List<int> normalGhostStop = new List<int> {2,10,14 ,18};
-        List<int> powerfulGhostStop = new List<int> {3, 5, 8, 12, 15 };
-        List<int> specialGhostStop = new List<int> {4, 6, 11, 16, };
+        List<int> humanStop = new List<int> { 8,9,13,17,19,20 };
+        List<int> normalGhostStop = new List<int> {5,10,14 ,18};
+        List<int> powerfulGhostStop = new List<int> {1, 2, 3, 4, 15 };
+        List<int> specialGhostStop = new List<int> {12, 6, 11, 16, };
 
         if (humanStop.Contains(stopIndex))
         {
