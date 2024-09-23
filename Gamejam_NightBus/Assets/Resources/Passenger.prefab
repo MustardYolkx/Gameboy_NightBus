@@ -116,7 +116,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 924606fad1c922648ae512f664402c77, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cdf86710596f9ca4b806c9fa4a8be150, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -139,5 +139,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55ca6c06a1a0a194184b721563a5fa83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueText: {fileID: 0}
   dialoguePrefab: {fileID: 1210249485582908607, guid: 529e9810485da5443a04f69247ee7b2a, type: 3}

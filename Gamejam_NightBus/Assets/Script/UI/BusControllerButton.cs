@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class BusControllerButton : MonoBehaviour
@@ -12,9 +13,14 @@ public class BusControllerButton : MonoBehaviour
     public Button kickButton;
     public Button musicButton;
 
-    
+    public Button none;
     // Start is called before the first frame update
     void Start()
+    {
+        StartSet();
+    }
+
+    public void StartSet()
     {
         airConditionButton.onClick.AddListener(() =>
         {
@@ -41,8 +47,9 @@ public class BusControllerButton : MonoBehaviour
     }
     public void TurnOffButton()
     {
-        GameRoot.GetInstance().TurnOffBusControlButton();
-        InputManager.Instance.busControllerActions.ConfirmButton.Disable();
+        //InputManager.Instance.RemoveConfirmButtonCallBack();
+        //GameRoot.GetInstance().TurnOffControllerButton();
+        EventSystem.current.SetSelectedGameObject(none.gameObject);
     }
     private void MusicButtonFunc()
     {

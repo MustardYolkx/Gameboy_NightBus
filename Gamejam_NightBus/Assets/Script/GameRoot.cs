@@ -37,6 +37,7 @@ public class GameRoot : MonoBehaviour
     public List<Transform> busSeatPos;
     public List<bool> canSit;
     public Transform GetOnPos;
+    public Transform driverPos;
     public Transform WalkToSeatPos;
     
     public GameObject onBusPassenger;
@@ -46,7 +47,8 @@ public class GameRoot : MonoBehaviour
     public bool passengerGetOn;
 
     public GameObject bus;
-    
+    public GameObject stopBoard;
+
     public List<Passenger> AppearedPowerfulGhost { get; private set; }
     #endregion
 
@@ -61,6 +63,7 @@ public class GameRoot : MonoBehaviour
     public GameObject startPage;
 
     public Button kickButtonInDriverView;
+    public GameObject controllerButtons;
 
     public GameObject AC_Light;
     public GameObject Music_Light;
@@ -73,6 +76,7 @@ public class GameRoot : MonoBehaviour
     public GameObject end1;
     public GameObject end2;
     public GameObject end3;
+    public GameObject end3BackAni;
     public GameObject end4;
 
     #endregion
@@ -118,6 +122,9 @@ public class GameRoot : MonoBehaviour
         startPage.SetActive(true);
         busControllerMenu.SetActive(false);
         driverViewMenu.SetActive(false);
+        stopBoard.SetActive(false);
+
+        
     }
 
     // Update is called once per frame
@@ -258,39 +265,59 @@ public class GameRoot : MonoBehaviour
     }
     public void GenerateSideViewPassenger(Passenger p)
     {
-        GameObject pa = Instantiate(onBusPassenger, WalkToSeatPos.position,Quaternion.identity);
+        
+        GameObject pa = Instantiate(onBusPassenger, WalkToSeatPos.position, Quaternion.identity);
+
         if(p.Type == PassengerType.PowerfulGhost)
         {
             canStopAdd = true;
         }
-        for(int i = 0; i < 50; i++)
+        if (p.Type != PassengerType.NormalGhost)
         {
-            int index = UnityEngine.Random.Range(0, canSit.Count);
-            if (canSit[index])
+            for (int i = 0; i < 50; i++)
             {
-                OnBusPassengerDic(true, index, p);
-                OnBusPassengerOBJList(true,index,pa);
-                if(pa.GetComponent<PassengerSeatIndex>() != null)
+                int index = UnityEngine.Random.Range(0, canSit.Count);
+                if (canSit[index])
                 {
-                    pa.GetComponent<PassengerSeatIndex>().InputSeatIndex(index,p);
+                    OnBusPassengerDic(true, index, p);
+                    OnBusPassengerOBJList(true, index, pa);
+                    if (pa.GetComponent<PassengerSeatIndex>() != null)
+                    {
+                        pa.GetComponent<PassengerSeatIndex>().InputSeatIndex(index, p);
+                    }
+                    StartCoroutine(PassengerWalk(pa, index));
+                    canSit[index] = false;
+                    break;
                 }
-                StartCoroutine(PassengerWalk(pa, index));
-                canSit[index] = false;
-                break;
+
             }
-            
+        }
+        else
+        {
+            pa.GetComponent<Animator>().SetTrigger("GetOffGhost");
+            StartCoroutine(DeleyDie(pa));
         }
           
     }
+
+    IEnumerator DeleyDie(GameObject ob)
+    {
+        while (Vector2.Distance(ob.transform.position, driverPos.position) > 0.2f)
+        {
+            ob.transform.position = Vector2.MoveTowards(ob.transform.position, driverPos.position, Time.deltaTime * 0.5f);
+            yield return null;
+        }
+        
+        GameOver(2);
+    }
     public void PassengerGetOffSideView()
     {
-        Instantiate(passengerGetOff, passengerGetOff.transform.position, Quaternion.identity);
+        Instantiate(passengerGetOff, passengerGetOffPos.transform.position, Quaternion.identity);
     }
     IEnumerator PassengerWalk(GameObject pa, int index)
     {
         while (Vector2.Distance(pa.transform.position, busSeatPos[index].position) > 0.2f)
-        {
-            
+        {            
             pa.transform.position = Vector2.MoveTowards(pa.transform.position, busSeatPos[index].position, Time.deltaTime * 2);
             yield return null;
         }
@@ -461,8 +488,11 @@ public class GameRoot : MonoBehaviour
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busEngine);
 
         busControllerMenu.SetActive(true);
-        TurnOnBusControlButton();
+        
         driverViewMenu.SetActive(false);
+        EnableBusControlPage();
+        TurnOnControllerButton();
+        TurnOffDriverViewButton();
         ButtonLightState();
         TurnOnPassengerOnDriverView();
         if (NextStopPassenger_List.Count > 0)
@@ -482,9 +512,11 @@ public class GameRoot : MonoBehaviour
     public void DriverViewPage()
     {
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.getOnBus);
-        InputManager.Instance.busControllerActions.ConfirmButton.Enable();
+        InputManager.Instance.AddConfirmButtonCallBack();
+        stopBoard.SetActive(false);
         driverViewMenu.SetActive(true);
         busControllerMenu.SetActive(false);
+        TurnOnDriverViewButton();
         HornOff();
         TurnOnKickButton();
         TurnOffPassengerOnDriverView();
@@ -591,13 +623,25 @@ public class GameRoot : MonoBehaviour
         
         EventSystem.current.SetSelectedGameObject(busControllerMenuFirst);
     }
-    public void TurnOffBusControlButton()
+    public void TurnOffDriverViewButton()
     {
-        busControllerMenu.GetComponent<CanvasGroup>().interactable = false;
+        driverViewMenu.GetComponent<CanvasGroup>().interactable = false;
     }
-    public void TurnOnBusControlButton()
+    public void TurnOnDriverViewButton()
     {
-        busControllerMenu.GetComponent<CanvasGroup>().interactable = true;
+        driverViewMenu.GetComponent<CanvasGroup>().interactable = true;
+        EventSystem.current.SetSelectedGameObject(driverViewMenuFirst);
+    }
+
+    public void TurnOffControllerButton()
+    {
+        controllerButtons.SetActive(false);
+        //EventSystem.current.SetSelectedGameObject(driverViewMenuFirst);
+    }
+    public void TurnOnControllerButton()
+    {
+        controllerButtons.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(busControllerMenuFirst);
     }
     public void TurnOffKickButton()
     {
@@ -667,6 +711,7 @@ public class GameRoot : MonoBehaviour
         //Player complete the game, happy ending
 
         //Player was complained by the company, game over
+        InputManager.Instance.AddConfirmButtonCallBack();
         if (i == 1)
         {
             GenerateUIPage(end1);
@@ -684,15 +729,16 @@ public class GameRoot : MonoBehaviour
         }
         else if(i == 3)
         {
-            GenerateUIPage(end3);
-            Button b = end2.GetComponentInChildren<Button>();
+            //GenerateUIPage(end3);
+            end3BackAni.SetActive(true);
+            Button b = end3.GetComponentInChildren<Button>();
             b.onClick.AddListener(() => ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
         }
         else if (i == 4)
         {
-            GenerateUIPage(end3);
-            Button b = end2.GetComponentInChildren<Button>();
+            GenerateUIPage(end4);
+            Button b = end4.GetComponentInChildren<Button>();
             b.onClick.AddListener(() => ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
         }
@@ -709,6 +755,8 @@ public class GameRoot : MonoBehaviour
     {
         //ResetAllUI();
         //ResetData();
+        ResetData();
+        ResetAllUI();
         SceneManager.LoadScene("GameScene");
     }
 
@@ -732,16 +780,21 @@ public class GameRoot : MonoBehaviour
         //TODO:
         //Play start animation
         StartCoroutine(StepOne());
+        InputManager.Instance.RemoveConfirmButtonCallBack();
         //Set default data
     }
 
     IEnumerator StepOne()
     {
         StartGamePageOff();
+        //busControllerMenu.GetComponent<BusControllerButton>().StartSet();
+        stopBoard.SetActive(true);
         BusControllerPage();
+        InputManager.Instance.RemoveConfirmButtonCallBack();
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busStop);
         yield return new WaitForSeconds(1);
         InputManager.Instance.busControllerActions.Enable();
+        InputManager.Instance.AddConfirmButtonCallBack();
         DriverViewPage();
         GenerateArrangement();
     }
@@ -752,13 +805,13 @@ public class GameRoot : MonoBehaviour
     }
     IEnumerator DrivingProcess()
     {
-        yield return new WaitForSeconds(8);
+        yield return new WaitForSeconds(7);
 
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busStop);
-        
+        stopBoard.SetActive(true);
         CheckAllPassengerState();
-        yield return new WaitForSeconds(2);
-        DriverViewPage();
+        yield return new WaitForSeconds(3);
+        
         GenerateArrangement();
     }
 
@@ -775,34 +828,41 @@ public class GameRoot : MonoBehaviour
 
     public void GenerateArrangement()
     {
-        List<int> humanStop = new List<int> { 8,9,13,17,19,20 };
-        List<int> normalGhostStop = new List<int> {5,10,14 ,18};
-        List<int> powerfulGhostStop = new List<int> {1, 2, 3, 4, 15 };
-        List<int> specialGhostStop = new List<int> {12, 6, 11, 16, };
+
+        List<int> humanStop = new List<int> { 1, 2,4,7, 9,13,19,20 };
+        List<int> normalGhostStop = new List<int> { 3, 8,17 ,18};
+        List<int> powerfulGhostStop = new List<int> {5,10, 14, 16 };
+        List<int> specialGhostStop = new List<int> {  6, 11,  };
+
 
         if (humanStop.Contains(stopIndex))
         {
             GeneratePassengerOnStop(false, PassengerType.HumanBeing);
+            DriverViewPage();
         }
         else if(normalGhostStop.Contains(stopIndex))
         {
             GeneratePassengerOnStop(false, PassengerType.NormalGhost);
+            DriverViewPage();
         }
         else if(powerfulGhostStop.Contains(stopIndex))
         {
             GeneratePassengerOnStop(false, PassengerType.PowerfulGhost);
+            DriverViewPage();
         }
         else if (specialGhostStop.Contains(stopIndex))
         {
             GeneratePassengerOnStop(false, PassengerType.SpecialGhost);
+            DriverViewPage();
         }
-        else if (stopIndex == 7)
+        else if (stopIndex == 21)
         {
             if(playerHP <=0) 
             {
+                stopBoard.GetComponent<Animator>().SetTrigger("End");
                 GameOver(3);
             }
-            else
+            else if(playerHP>0) 
             {
                 GameOver(4);
             }
