@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PassengerChoseButtonFunc : MonoBehaviour
@@ -12,37 +13,43 @@ public class PassengerChoseButtonFunc : MonoBehaviour
     public Button seat2;
     public Button seat3;
     public Button seat4;
+
     // Start is called before the first frame update
     void Start()
     {
         seat0.onClick.AddListener(() =>
         {
             Seat0ButtonFunc();
-            GameRoot.GetInstance().TurnOffBusControlButton();
+            TurnOffControllerButton();
         });
 
         seat1.onClick.AddListener(() =>
         {
             Seat1ButtonFunc();
-            GameRoot.GetInstance().TurnOffBusControlButton();
+            TurnOffControllerButton();
         });
         seat2.onClick.AddListener(() =>
         {
             Seat2ButtonFunc();
-            GameRoot.GetInstance().TurnOffBusControlButton();
+            TurnOffControllerButton();
         });
         seat3.onClick.AddListener(() =>
         {
             Seat3ButtonFunc();
-            GameRoot.GetInstance().TurnOffBusControlButton();
+            TurnOffControllerButton();
         });
         seat4.onClick.AddListener(() =>
         {
             Seat4ButtonFunc();
-            GameRoot.GetInstance().TurnOffBusControlButton();
+            TurnOffControllerButton();
         });
     }
-
+    private void TurnOffControllerButton()
+    {
+        InputManager.Instance.RemoveConfirmButtonCallBack();
+        GameRoot.GetInstance().TurnOffControllerButton();
+        
+    }
     private void Seat0ButtonFunc()
     {
         GameRoot.GetInstance().KickOffPassengerWhenBusDriving(0);

@@ -76,17 +76,20 @@ public class InputManager : MonoBehaviour
 
     }
 
-        public void AddInputActionCallBacks()
-    {
-        busControllerActions.OpenBusController.started += OpenBusControlller;
-        busControllerActions.DriverView.started += OnDriverView;
-        busControllerActions.ConfirmButton.started += OnConfirmButtonPress;
-        
+    public void AddInputActionCallBacks()
+    {          
 
-        gameStartPhaseActions.Start.started += OnGameStart;
+    gameStartPhaseActions.Start.started += OnGameStart;
     }
 
-
+    public void AddConfirmButtonCallBack()
+    {
+        busControllerActions.ConfirmButton.started += OnConfirmButtonPress;
+    }
+    public void RemoveConfirmButtonCallBack()
+    {
+        busControllerActions.ConfirmButton.started -= OnConfirmButtonPress;
+    }
     public void AddCancelButtonCallBack()
     {
         busControllerActions.CancelButton.started += OnCancelButtonPress;
@@ -98,8 +101,7 @@ public class InputManager : MonoBehaviour
 
     public void RemoveInputActionCallBacks()
     {
-        busControllerActions.OpenBusController.started -= OpenBusControlller;
-        busControllerActions.DriverView.started -= OnDriverView;
+        
         busControllerActions.ConfirmButton.started -= OnConfirmButtonPress;
         busControllerActions.CancelButton.started -= OnCancelButtonPress;
         gameStartPhaseActions.Start.started -= OnGameStart;
@@ -143,21 +145,7 @@ public class InputManager : MonoBehaviour
     }
     #endregion
     #region Menu Open and Close
-    private void OpenBusControlller(InputAction.CallbackContext obj)
-    {
-        busControllerMenu.SetActive(true);
-        driverViewMenu.SetActive(false);
-        GameRoot.GetInstance().ClearNextStopPassenger();
-        EventSystem.current.SetSelectedGameObject(busControllerMenuFirst);
-    }
-
-    private void OnDriverView(InputAction.CallbackContext obj)
-    {
-        driverViewMenu.SetActive(true);
-        busControllerMenu.SetActive(false);
-        GameRoot.GetInstance().GeneratePassengerOnStop(false, PassengerType.HumanBeing);
-        EventSystem.current.SetSelectedGameObject(driverViewMenuFirst);
-    }
+    
     #endregion
 
 }
