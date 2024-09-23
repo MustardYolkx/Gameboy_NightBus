@@ -828,10 +828,12 @@ public class GameRoot : MonoBehaviour
 
     public void GenerateArrangement()
     {
+
         List<int> humanStop = new List<int> { 1, 2,4,7, 9,13,19,20 };
         List<int> normalGhostStop = new List<int> { 3, 8,17 ,18};
         List<int> powerfulGhostStop = new List<int> {5,10, 14, 16 };
         List<int> specialGhostStop = new List<int> {  6, 11,  };
+
 
         if (humanStop.Contains(stopIndex))
         {
