@@ -20,10 +20,10 @@ public class PassengerDialogue : MonoBehaviour
     private bool isDialogueActive = false;
     private string passengerName;
     private float typeSpeed = 0.05f; // 可编辑的对话加载速度
-    private float dialogueDuration = 5f; // 对话框存在时间
-    private float dialogueInterval = 3f; // 对话生成间隔
+    private float dialogueDuration = 3f; // 对话框存在时间
     private Transform currentDialoguePosition;
 
+    // 初始化
     private void Start()
     {
         seatIndex = GetComponent<PassengerSeatIndex>();
@@ -40,31 +40,18 @@ public class PassengerDialogue : MonoBehaviour
         dialoguePositions.Add(canvasTransform.Find("DialoguePosition2"));
         dialoguePositions.Add(canvasTransform.Find("DialoguePosition3"));
         dialoguePositions.Add(canvasTransform.Find("DialoguePosition4"));
-        dialoguePositions.Add(canvasTransform.Find("DialoguePosition5"));
-        dialoguePositions.Add(canvasTransform.Find("DialoguePosition6"));
-        dialoguePositions.Add(canvasTransform.Find("DialoguePosition7"));
-        dialoguePositions.Add(canvasTransform.Find("DialoguePosition8"));
 
         // 初始化每个乘客的台词
         InitializeDialogues();
 
         // 获取 Passenger 名称
         passengerName = seatIndex.thisPassenger.passengerName;
-
-        // 检查乘客是否需要触发对话逻辑
-        if (passengerName == "eyemon" || passengerName == "Loudmon" || passengerName == "Coldmon" || passengerName == "Talkmon")
-        {
-            // 检查乘客是否已坐下
-            if (seatIndex.currentAnimState == "Sit")
-            {
-                TriggerDialogue("Need"); // 开始显示 Need 文本
-            }
-        }
     }
 
+    // 初始化乘客的台词
     private void InitializeDialogues()
     {
-        dialogues["eyemon"] = new List<string> { "Wanna music...", "M/>'.^%&USIC!", "♫~" };
+        dialogues["Eyemon"] = new List<string> { "Wanna music...", "M/>'.^%&USIC!", "♫~" };
         dialogues["Loudmon"] = new List<string> { "Beep beep!", "Beeeeeeeeeeeeeeeeeeeeeep!", "[Groaning]" };
         dialogues["Coldmon"] = new List<string> { "Barbecue in the fire...", "Hellish Heat! Melting!", "Wuhu~ Cold air!" };
         talkmonDialogueList = new List<string> {
@@ -72,17 +59,15 @@ public class PassengerDialogue : MonoBehaviour
         "Yayaya~ha!",
         "Sad...",
         "Buttons...",
-        "Driving without talking...",
         "Awkward...",
         "Wanna talk...",
         "Friends in here...",
-        "Biubiu~",
         "Ulah Ha!"
     };
     }
 
-    // 触发对话
-    public void TriggerDialogue(string dialogueType)
+    // 生成对话框（公共接口）
+    public void ShowDialogue(string passengerName, string dialogueType)
     {
         if (isDialogueActive) return;
 
@@ -90,7 +75,7 @@ public class PassengerDialogue : MonoBehaviour
 
         if (passengerName != "Talkmon")
         {
-            ShowDialogue(dialogues[passengerName][0], fixedDialoguePosition); // 显示第1句台词 (Need)，固定位置
+            ShowDialogueText(dialogues[passengerName][0], fixedDialoguePosition); // 显示第1句台词 (Need)，固定位置
         }
         else
         {
@@ -98,26 +83,72 @@ public class PassengerDialogue : MonoBehaviour
         }
     }
 
-    private void ShowDialogue(string text, Transform position)
+    // 核心生成对话框的逻辑
+    private void ShowDialogueText(string text, Transform position)
     {
+        // 生成对话框时设置活动状态
+        isDialogueActive = true;
         currentDialogue = Instantiate(dialoguePrefab, position.position, Quaternion.identity, canvasTransform);
 
-        // 在这里动态查找 TextMeshProUGUI 组件，而不是依赖手动绑定
+        // 查找并显示TextMeshPro组件的文字
         TextMeshProUGUI dialogueText = currentDialogue.GetComponentInChildren<TextMeshProUGUI>();
 
         if (dialogueText != null)
         {
             StartCoroutine(TypeDialogue(text, dialogueText));
         }
-        else
-        {
-            Debug.LogError("TextMeshProUGUI component not found on dialoguePrefab.");
-        }
 
+        // 销毁对话框计时器
         StartCoroutine(RemoveDialogueAfterTime(dialogueDuration));
     }
 
-    IEnumerator TypeDialogue(string text, TextMeshProUGUI dialogueText)
+    // 对话框定时销毁
+    IEnumerator RemoveDialogueAfterTime(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        if (currentDialogue != null)
+        {
+            Destroy(currentDialogue);
+            currentDialogue = null;
+        }
+
+        // 重置状态
+        isDialogueActive = false;
+    }
+
+    // Talkmon的随机生成对话框
+    private IEnumerator GenerateRandomTalkmonDialogue()
+    {
+        int lastIndex = -1;
+
+        while (true)
+        {
+            // 随机选择不同的位置
+            int randomIndex;
+            do
+            {
+                randomIndex = Random.Range(0, dialoguePositions.Count);
+            }
+            while (randomIndex == lastIndex);
+
+            lastIndex = randomIndex;
+
+            currentDialoguePosition = dialoguePositions[randomIndex];
+
+            // 随机选择 Talkmon 的台词
+            int randomLineIndex = Random.Range(0, talkmonDialogueList.Count);
+            string randomLine = talkmonDialogueList[randomLineIndex];
+
+            // 显示对话框
+            ShowDialogueText(randomLine, currentDialoguePosition);
+
+            yield return new WaitForSeconds(dialogueDuration);
+        }
+    }
+
+    // 逐字显示文本
+    private IEnumerator TypeDialogue(string text, TextMeshProUGUI dialogueText)
     {
         dialogueText.text = "";
         foreach (char letter in text.ToCharArray())
@@ -127,50 +158,35 @@ public class PassengerDialogue : MonoBehaviour
         }
     }
 
-    IEnumerator RemoveDialogueAfterTime(float time)
+    // 清除所有对话框（公共接口）
+    public void ClearAllDialogues()
     {
-        yield return new WaitForSeconds(time);
-        Destroy(currentDialogue);
+        if (currentDialogue != null)
+        {
+            Destroy(currentDialogue);
+        }
+
+        StopAllCoroutines();
         isDialogueActive = false;
     }
 
-    IEnumerator GenerateRandomTalkmonDialogue()
-    {
-        while (true)
-        {
-            if (!isDialogueActive)
-            {
-                // 随机选择对话框生成位置
-                int randomIndex = Random.Range(0, dialoguePositions.Count);
-                currentDialoguePosition = dialoguePositions[randomIndex];
-
-                // 随机选择 Talkmon 的台词
-                int randomLineIndex = Random.Range(0, talkmonDialogueList.Count);
-                string randomLine = talkmonDialogueList[randomLineIndex];
-
-                ShowDialogue(randomLine, currentDialoguePosition);
-
-                yield return new WaitForSeconds(dialogueDuration + dialogueInterval);
-            }
-
-            yield return null;
-        }
-    }
-
-    // 检查 Ghost 需求的满足情况
-    private void CheckGhostNeeds()
+    // 检查 Ghost 需求的满足情况，并在指定位置生成对话框
+    public void CheckGhostNeeds()
     {
         if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.Music && gameRoot.musicOn)
         {
-            ShowDialogue(dialogues["eyemon"][2], fixedDialoguePosition); // Eyemon的 Complete 文本
+            // 如果满足 Music 需求，在固定位置生成对话框并显示文本
+            ShowDialogueText(dialogues["Eyemon"][2], fixedDialoguePosition); // Eyemon 的 Complete 文本
         }
         else if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.AirCondition && gameRoot.airConditionOn)
         {
-            ShowDialogue(dialogues["Coldmon"][2], fixedDialoguePosition); // Coldmon的 Complete 文本
+            // 如果满足 AirCondition 需求，在固定位置生成对话框并显示文本
+            ShowDialogueText(dialogues["Coldmon"][2], fixedDialoguePosition); // Coldmon 的 Complete 文本
         }
         else if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.Horn && gameRoot.hornOn)
         {
-            ShowDialogue(dialogues["Loudmon"][2], fixedDialoguePosition); // Loudmon的 Complete 文本
+            // 如果满足 Horn 需求，在固定位置生成对话框并显示文本
+            ShowDialogueText(dialogues["Loudmon"][2], fixedDialoguePosition); // Loudmon 的 Complete 文本
         }
     }
 
