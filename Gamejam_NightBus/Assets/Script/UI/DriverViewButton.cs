@@ -16,11 +16,14 @@ public class DriverViewButton : MonoBehaviour
         kickButton.onClick.AddListener(() =>
         {
             KickButtonFunc();
+            MusicManager.Instance.ChangeSFXLayer3Sound(MusicManager.Instance.kickButtonPress);
+            MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.BeKicked);
         });
 
         steeringWheel.onClick.AddListener(() =>
         {
             SteeringWheelFunc();
+            MusicManager.Instance.ChangeSFXLayer3Sound(MusicManager.Instance.normalButtonPress);
         });
     }
 

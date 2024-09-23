@@ -30,7 +30,15 @@ public class PassengerAnimFunc : MonoBehaviour
         GameRoot.GetInstance().GetCurrentWalkPassenger(thisPassenger);
         //GameRoot.GetInstance().OnBusPassengerOBJList(true, gameObject);
     }
+    public void BeKickSFX()
+    {
+        MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.fly);
+    }
 
+    public void CoinSFX()
+    {
+        MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.Coin);
+    }
     public void BeKicked()
     {
         if(thisPassenger.Type == PassengerType.HumanBeing)
@@ -46,16 +54,23 @@ public class PassengerAnimFunc : MonoBehaviour
             GameRoot.GetInstance().StartDriving();
             GameRoot.GetInstance().BusControllerPage();
         }
-        else
+        else if (thisPassenger.Type == PassengerType.PowerfulGhost)
         {
             Destroy(gameObject);
+            GameRoot.GetInstance().playerHP--;
             GameRoot.GetInstance().canStopAdd = false;
             
             GameRoot.GetInstance().ClearNextStopPassenger();
             GameRoot.GetInstance().StartDriving();
             GameRoot.GetInstance().BusControllerPage();
         }
-        
+        else if (thisPassenger.Type == PassengerType.SpecialGhost)
+        {
+            Destroy(gameObject);
+            GameRoot.GetInstance().ClearNextStopPassenger();
+            GameRoot.GetInstance().StartDriving();
+            GameRoot.GetInstance().BusControllerPage();
+        }
     }
     public void TurnOffKickButton()
     {

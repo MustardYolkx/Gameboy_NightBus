@@ -49,6 +49,14 @@ public class InputManager : MonoBehaviour
     {
         StopMouseInput();
     }
+
+    public void PressSFX()
+    {
+        if(Input.GetKeyDown(KeyCode.W)|| Input.GetKeyDown(KeyCode.A)|| Input.GetKeyDown(KeyCode.D)|| Input.GetKeyDown(KeyCode.S))
+        {
+            MusicManager.Instance.ChangeSFXLayer3Sound(MusicManager.Instance.normalButtonChange);
+        }
+    }
     public void StopMouseInputStart()
     {
         // 隐藏并锁定鼠标光标

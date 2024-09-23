@@ -38,13 +38,15 @@ public class GameRoot : MonoBehaviour
     public List<bool> canSit;
     public Transform GetOnPos;
     public Transform WalkToSeatPos;
-
+    
     public GameObject onBusPassenger;
     public GameObject passengerGetOff;
     public Transform passengerGetOffPos;
     public Passenger currentWalkPassenger;
     public bool passengerGetOn;
 
+    public GameObject bus;
+    
     public List<Passenger> AppearedPowerfulGhost { get; private set; }
     #endregion
 
@@ -70,6 +72,8 @@ public class GameRoot : MonoBehaviour
 
     public GameObject end1;
     public GameObject end2;
+    public GameObject end3;
+    public GameObject end4;
 
     #endregion
 
@@ -81,6 +85,8 @@ public class GameRoot : MonoBehaviour
     public bool airConditionOn = false;
     public bool musicOn = false;
     public bool hornOn = false;
+    public bool normalMusic;
+    public int playerHP=2;
     #endregion
     private void Awake()
     {
@@ -453,7 +459,9 @@ public class GameRoot : MonoBehaviour
     public void BusControllerPage()
     {
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busEngine);
+
         busControllerMenu.SetActive(true);
+        TurnOnBusControlButton();
         driverViewMenu.SetActive(false);
         ButtonLightState();
         TurnOnPassengerOnDriverView();
@@ -474,6 +482,7 @@ public class GameRoot : MonoBehaviour
     public void DriverViewPage()
     {
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.getOnBus);
+        InputManager.Instance.busControllerActions.ConfirmButton.Enable();
         driverViewMenu.SetActive(true);
         busControllerMenu.SetActive(false);
         HornOff();
@@ -579,7 +588,16 @@ public class GameRoot : MonoBehaviour
     public void EnableBusControlPage()
     {
         busControllerMenu.GetComponent<CanvasGroup>().interactable = true;
+        
         EventSystem.current.SetSelectedGameObject(busControllerMenuFirst);
+    }
+    public void TurnOffBusControlButton()
+    {
+        busControllerMenu.GetComponent<CanvasGroup>().interactable = false;
+    }
+    public void TurnOnBusControlButton()
+    {
+        busControllerMenu.GetComponent<CanvasGroup>().interactable = true;
     }
     public void TurnOffKickButton()
     {
@@ -599,6 +617,11 @@ public class GameRoot : MonoBehaviour
     #endregion
 
     #region Bus Environment Bool
+
+    public void BusGhostLight()
+    {
+        bus.GetComponent<Animator>().SetTrigger("Ghost");
+    }
     public void ButtonLightState()
     {
         AC_Light.GetComponent<Animator>().SetBool("LightOn", airConditionOn);
@@ -657,6 +680,20 @@ public class GameRoot : MonoBehaviour
             GenerateUIPage(end2);
             Button b = end2.GetComponentInChildren<Button>();
             b.onClick.AddListener(()=>ReStart());
+            EventSystem.current.SetSelectedGameObject(b.gameObject);
+        }
+        else if(i == 3)
+        {
+            GenerateUIPage(end3);
+            Button b = end2.GetComponentInChildren<Button>();
+            b.onClick.AddListener(() => ReStart());
+            EventSystem.current.SetSelectedGameObject(b.gameObject);
+        }
+        else if (i == 4)
+        {
+            GenerateUIPage(end3);
+            Button b = end2.GetComponentInChildren<Button>();
+            b.onClick.AddListener(() => ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
         }
         //Player drive to the ghost stop, game over
@@ -738,11 +775,12 @@ public class GameRoot : MonoBehaviour
 
     public void GenerateArrangement()
     {
-        List<int> humanStop = new List<int> { 1,4,6,9,11,13,16,17,19,20 };
-        List<int> normalGhostStop = new List<int> {2,   7,10,14 ,18};
+        List<int> humanStop = new List<int> { 1,9,13,17,19,20 };
+        List<int> normalGhostStop = new List<int> {2,10,14 ,18};
         List<int> powerfulGhostStop = new List<int> {3, 5, 8, 12, 15 };
+        List<int> specialGhostStop = new List<int> {4, 6, 11, 16, };
 
-        if(humanStop.Contains(stopIndex))
+        if (humanStop.Contains(stopIndex))
         {
             GeneratePassengerOnStop(false, PassengerType.HumanBeing);
         }
@@ -754,6 +792,20 @@ public class GameRoot : MonoBehaviour
         {
             GeneratePassengerOnStop(false, PassengerType.PowerfulGhost);
         }
-               
+        else if (specialGhostStop.Contains(stopIndex))
+        {
+            GeneratePassengerOnStop(false, PassengerType.SpecialGhost);
+        }
+        else if (stopIndex == 7)
+        {
+            if(playerHP <=0) 
+            {
+                GameOver(3);
+            }
+            else
+            {
+                GameOver(4);
+            }
+        }
     }
 }
