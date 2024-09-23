@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7501716069156401218}
   - component: {fileID: 6978949417245683562}
   - component: {fileID: 8618417894640971190}
+  - component: {fileID: 331158328728095019}
   m_Layer: 0
   m_Name: Passenger
   m_TagString: Untagged
@@ -51,6 +52,8 @@ MonoBehaviour:
   maxTurn: 0
   minTurn: 0
   targetTurn: 0
+  currentAnimState: 
+  isNeedMeet: 0
 --- !u!95 &6978949417245683562
 Animator:
   serializedVersion: 5
@@ -124,3 +127,17 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &331158328728095019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3466070886531972835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ca6c06a1a0a194184b721563a5fa83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueText: {fileID: 0}
+  dialoguePrefab: {fileID: 1210249485582908607, guid: 529e9810485da5443a04f69247ee7b2a, type: 3}

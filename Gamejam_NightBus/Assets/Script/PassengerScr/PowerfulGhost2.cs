@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PowerfulGhost2 : Passenger
 {
-    private string name = "Eyemon";
+    private string name = "Coldmon";
     private string path = "PowerfulGhost/PowerfulGhost2";
     public PowerfulGhost2() : base()
     {
