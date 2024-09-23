@@ -13,6 +13,10 @@ public class MusicManager : MonoBehaviour
     public AudioSource SFXsoundLayer3;
     #region BGM
     public AudioClip backgroundMusic1;
+    public AudioClip end1;
+    public AudioClip end2;
+    public AudioClip end3;
+    public AudioClip end4;
     #endregion
 
 
@@ -34,6 +38,7 @@ public class MusicManager : MonoBehaviour
     #region SFX - 2
     public AudioClip busEngine;
     public AudioClip busStop;
+
     #endregion
 
     #region SFX - 3

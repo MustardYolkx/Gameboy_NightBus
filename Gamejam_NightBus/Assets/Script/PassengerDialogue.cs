@@ -21,9 +21,9 @@ public class PassengerDialogue : MonoBehaviour
     private string passengerName;
     private float typeSpeed = 0.05f; // 可编辑的对话加载速度
     private float dialogueDuration = 3f; // 对话框存在时间
+    //private float dialogueInterval = 2.5f; // 对话生成间隔
     private Transform currentDialoguePosition;
 
-    // 初始化
     private void Start()
     {
         seatIndex = GetComponent<PassengerSeatIndex>();
@@ -41,14 +41,24 @@ public class PassengerDialogue : MonoBehaviour
         dialoguePositions.Add(canvasTransform.Find("DialoguePosition3"));
         dialoguePositions.Add(canvasTransform.Find("DialoguePosition4"));
 
+
         // 初始化每个乘客的台词
         InitializeDialogues();
 
         // 获取 Passenger 名称
         passengerName = seatIndex.thisPassenger.passengerName;
+
+
+        // 检查乘客是否需要触发对话逻辑
+        if (passengerName == "Eyemon" || passengerName == "Loudmon" || passengerName == "Coldmon" || passengerName == "Talkmon")
+        {
+
+            Debug.Log(passengerName + " is sitting, triggering dialogue...");
+            TriggerDialogue("Need"); // 开始显示 Need 文本
+
+        }
     }
 
-    // 初始化乘客的台词
     private void InitializeDialogues()
     {
         dialogues["Eyemon"] = new List<string> { "Wanna music...", "M/>'.^%&USIC!", "♫~" };
@@ -66,8 +76,8 @@ public class PassengerDialogue : MonoBehaviour
     };
     }
 
-    // 生成对话框（公共接口）
-    public void ShowDialogue(string passengerName, string dialogueType)
+    // 触发对话
+    public void TriggerDialogue(string dialogueType)
     {
         if (isDialogueActive) return;
 
@@ -75,7 +85,7 @@ public class PassengerDialogue : MonoBehaviour
 
         if (passengerName != "Talkmon")
         {
-            ShowDialogueText(dialogues[passengerName][0], fixedDialoguePosition); // 显示第1句台词 (Need)，固定位置
+            ShowDialogue(dialogues[passengerName][0], fixedDialoguePosition); // 显示第1句台词 (Need)，固定位置
         }
         else
         {
@@ -83,11 +93,10 @@ public class PassengerDialogue : MonoBehaviour
         }
     }
 
-    // 核心生成对话框的逻辑
-    private void ShowDialogueText(string text, Transform position)
+    private void ShowDialogue(string text, Transform position)
     {
         // 生成对话框时设置活动状态
-        isDialogueActive = true;
+        isDialogueActive = true;  // 确保对话框生成时，活动状态设置为 true
         currentDialogue = Instantiate(dialoguePrefab, position.position, Quaternion.identity, canvasTransform);
 
         // 查找并显示TextMeshPro组件的文字
@@ -102,53 +111,61 @@ public class PassengerDialogue : MonoBehaviour
         StartCoroutine(RemoveDialogueAfterTime(dialogueDuration));
     }
 
-    // 对话框定时销毁
     IEnumerator RemoveDialogueAfterTime(float time)
     {
+        // 确保对话框在指定时间后被移除
         yield return new WaitForSeconds(time);
 
         if (currentDialogue != null)
         {
-            Destroy(currentDialogue);
-            currentDialogue = null;
+            Destroy(currentDialogue);  // 移除当前对话框
+            Debug.Log("Dialogue removed after " + time + " seconds.");
+            currentDialogue = null;  // 清空引用，防止再次使用这个引用
         }
 
-        // 重置状态
+        // 重置状态，允许生成下一个对话框
         isDialogueActive = false;
+        Debug.Log("isDialogueActive reset to false.");
     }
 
-    // Talkmon的随机生成对话框
-    private IEnumerator GenerateRandomTalkmonDialogue()
-    {
-        int lastIndex = -1;
 
-        while (true)
+
+    IEnumerator GenerateRandomTalkmonDialogue()
+    {
+        int lastIndex = -1;  // 用于记录上一次生成的位置
+
+        while (true)  // 持续生成对话
         {
-            // 随机选择不同的位置
+            // 确保不会选择上一次的位置
             int randomIndex;
             do
             {
                 randomIndex = Random.Range(0, dialoguePositions.Count);
             }
-            while (randomIndex == lastIndex);
+            while (randomIndex == lastIndex);  // 如果随机到的索引与上次相同，重新生成
 
+            // 记录当前生成的位置索引
             lastIndex = randomIndex;
 
             currentDialoguePosition = dialoguePositions[randomIndex];
+            Debug.Log("Talkmon dialogue at position: " + currentDialoguePosition.position);
 
             // 随机选择 Talkmon 的台词
             int randomLineIndex = Random.Range(0, talkmonDialogueList.Count);
             string randomLine = talkmonDialogueList[randomLineIndex];
 
             // 显示对话框
-            ShowDialogueText(randomLine, currentDialoguePosition);
+            ShowDialogue(randomLine, currentDialoguePosition);
 
+            // 等待对话框消失后再生成下一个
             yield return new WaitForSeconds(dialogueDuration);
+
+            isDialogueActive = false;  // 重置活动状态，允许生成下一个对话框
         }
     }
 
-    // 逐字显示文本
-    private IEnumerator TypeDialogue(string text, TextMeshProUGUI dialogueText)
+
+    IEnumerator TypeDialogue(string text, TextMeshProUGUI dialogueText)
     {
         dialogueText.text = "";
         foreach (char letter in text.ToCharArray())
@@ -158,7 +175,25 @@ public class PassengerDialogue : MonoBehaviour
         }
     }
 
-    // 清除所有对话框（公共接口）
+
+    // 检查 Ghost 需求的满足情况
+    public void CheckGhostNeeds()
+    {
+        if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.Music && gameRoot.musicOn)
+        {
+            ShowDialogue(dialogues["Eyemon"][2], fixedDialoguePosition); // Eyemon的 Complete 文本
+        }
+        else if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.AirCondition && gameRoot.airConditionOn)
+        {
+            ShowDialogue(dialogues["Coldmon"][2], fixedDialoguePosition); // Coldmon的 Complete 文本
+        }
+        else if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.Horn && gameRoot.hornOn)
+        {
+            ShowDialogue(dialogues["Loudmon"][2], fixedDialoguePosition); // Loudmon的 Complete 文本
+        }
+    }
+
+    // 在切换视角的时候清除生成的对话框
     public void ClearAllDialogues()
     {
         if (currentDialogue != null)
@@ -169,25 +204,8 @@ public class PassengerDialogue : MonoBehaviour
         StopAllCoroutines();
         isDialogueActive = false;
     }
-
-    // 检查 Ghost 需求的满足情况，并在指定位置生成对话框
-    public void CheckGhostNeeds()
+    private void OnDisable()
     {
-        if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.Music && gameRoot.musicOn)
-        {
-            // 如果满足 Music 需求，在固定位置生成对话框并显示文本
-            ShowDialogueText(dialogues["Eyemon"][2], fixedDialoguePosition); // Eyemon 的 Complete 文本
-        }
-        else if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.AirCondition && gameRoot.airConditionOn)
-        {
-            // 如果满足 AirCondition 需求，在固定位置生成对话框并显示文本
-            ShowDialogueText(dialogues["Coldmon"][2], fixedDialoguePosition); // Coldmon 的 Complete 文本
-        }
-        else if (seatIndex.thisPassenger.ghostNeed == PowerfulGhostNeed.Horn && gameRoot.hornOn)
-        {
-            // 如果满足 Horn 需求，在固定位置生成对话框并显示文本
-            ShowDialogueText(dialogues["Loudmon"][2], fixedDialoguePosition); // Loudmon 的 Complete 文本
-        }
+        ClearAllDialogues();
     }
-
 }

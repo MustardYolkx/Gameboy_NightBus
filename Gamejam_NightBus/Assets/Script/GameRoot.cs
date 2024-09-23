@@ -281,10 +281,15 @@ public class GameRoot : MonoBehaviour
                 {
                     OnBusPassengerDic(true, index, p);
                     OnBusPassengerOBJList(true, index, pa);
-                    if (pa.GetComponent<PassengerSeatIndex>() != null)
-                    {
+                    //if (pa.GetComponent<PassengerSeatIndex>() != null)
+                    //{
                         pa.GetComponent<PassengerSeatIndex>().InputSeatIndex(index, p);
-                    }
+                    //}
+                    //if (pa.GetComponent<PassengerSeatIndex>().thisPassenger.Type == PassengerType.PowerfulGhost)
+                    //{
+                    //    pa.GetComponent<PassengerDialogue>().ShowDialogue(pa.GetComponent<PassengerSeatIndex>().thisPassenger.passengerName,"need");
+
+                    //}
                     StartCoroutine(PassengerWalk(pa, index));
                     canSit[index] = false;
                     break;
@@ -715,6 +720,7 @@ public class GameRoot : MonoBehaviour
         if (i == 1)
         {
             GenerateUIPage(end1);
+            MusicManager.Instance.ChangeBGM2(MusicManager.Instance.end1);
             Button b = end1.GetComponentInChildren<Button>();
             b.onClick.AddListener(() => ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
@@ -723,6 +729,7 @@ public class GameRoot : MonoBehaviour
         else if (i==2)
         {
             GenerateUIPage(end2);
+            MusicManager.Instance.ChangeBGM2(MusicManager.Instance.end2);
             Button b = end2.GetComponentInChildren<Button>();
             b.onClick.AddListener(()=>ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
@@ -731,6 +738,7 @@ public class GameRoot : MonoBehaviour
         {
             //GenerateUIPage(end3);
             end3BackAni.SetActive(true);
+            MusicManager.Instance.ChangeBGM2(MusicManager.Instance.end3);
             Button b = end3.GetComponentInChildren<Button>();
             b.onClick.AddListener(() => ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
@@ -738,6 +746,7 @@ public class GameRoot : MonoBehaviour
         else if (i == 4)
         {
             GenerateUIPage(end4);
+            MusicManager.Instance.ChangeBGM2(MusicManager.Instance.end4);
             Button b = end4.GetComponentInChildren<Button>();
             b.onClick.AddListener(() => ReStart());
             EventSystem.current.SetSelectedGameObject(b.gameObject);
@@ -805,12 +814,15 @@ public class GameRoot : MonoBehaviour
     }
     IEnumerator DrivingProcess()
     {
+        yield return new WaitForSeconds(0.5f);
+        BusControllerPage();
         yield return new WaitForSeconds(7);
 
         MusicManager.Instance.ChangeSFXLayer2Sound(MusicManager.Instance.busStop);
         stopBoard.SetActive(true);
+        yield return new WaitForSeconds(2);
         CheckAllPassengerState();
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
         
         GenerateArrangement();
     }
@@ -829,10 +841,10 @@ public class GameRoot : MonoBehaviour
     public void GenerateArrangement()
     {
 
-        List<int> humanStop = new List<int> { 1, 2,4,7, 9,13,19,20 };
-        List<int> normalGhostStop = new List<int> { 3, 8,17 ,18};
-        List<int> powerfulGhostStop = new List<int> {5,10, 14, 16 };
-        List<int> specialGhostStop = new List<int> {  6, 11,  };
+        List<int> humanStop = new List<int> {1,2, 5, 7,12, 19,20 };
+        List<int> normalGhostStop = new List<int> {3, 8,11,17 ,18};
+        List<int> powerfulGhostStop = new List<int> {6, 10, 14, 16 };
+        List<int> specialGhostStop = new List<int> { 4, 9,  13, 15,};
 
 
         if (humanStop.Contains(stopIndex))
