@@ -50,7 +50,8 @@ public class DriverViewButton : MonoBehaviour
         //TODO:        
         //Play Animation
         //Turn to Bus side view
-        GameRoot.GetInstance().BusControllerPage();
+
+        //GameRoot.GetInstance().BusControllerPage();
         GameRoot.GetInstance().StartDriving();
     }
 }

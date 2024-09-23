@@ -166,7 +166,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RESTART
+  m_text: Press J to RESTART
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c9da454f19c4a2340b19acbda324d88c, type: 2}
   m_sharedMaterial: {fileID: 3396403550718301398, guid: c9da454f19c4a2340b19acbda324d88c, type: 2}
@@ -271,7 +271,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16.4, y: -3.8}
+  m_AnchoredPosition: {x: 57, y: 0.2}
   m_SizeDelta: {x: 67.86, y: 15.69}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7476087236885412555
@@ -373,7 +373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3787227927161843393
 RectTransform:
   m_ObjectHideFlags: 0
@@ -390,7 +390,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7, y: 1.2}
+  m_AnchoredPosition: {x: 0.7, y: 46.8}
   m_SizeDelta: {x: 131.11, y: 30.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9186249863093412776
@@ -421,7 +421,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Player has been complaint
+  m_text: Seem to have angered Hades...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c9da454f19c4a2340b19acbda324d88c, type: 2}
   m_sharedMaterial: {fileID: 3396403550718301398, guid: c9da454f19c4a2340b19acbda324d88c, type: 2}
@@ -448,8 +448,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8.89
-  m_fontSizeBase: 8.89
+  m_fontSize: 9.03
+  m_fontSizeBase: 9.03
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
