@@ -101,8 +101,10 @@ public class GameRoot : MonoBehaviour
         else
         {
             Destroy(this.gameObject);
+            instance = this;
         }
         
+
         Passenger_Dic = new Passenger_Dictionary();
         OnBusPassenger_Dic = new Dictionary<int, Passenger>();
         OnBusPassOBJ_Dic = new Dictionary<int, GameObject>();
@@ -766,6 +768,9 @@ public class GameRoot : MonoBehaviour
         //ResetData();
         ResetData();
         ResetAllUI();
+        StopCoroutine(StepOne());
+        StopAllCoroutines();
+        InputManager.Instance.RemoveInputActionCallBacks();
         SceneManager.LoadScene("GameScene");
     }
 
@@ -789,6 +794,7 @@ public class GameRoot : MonoBehaviour
         //TODO:
         //Play start animation
         StartCoroutine(StepOne());
+        InputManager.Instance.RemoveStartCallBack();
         InputManager.Instance.RemoveConfirmButtonCallBack();
         //Set default data
     }
@@ -804,7 +810,7 @@ public class GameRoot : MonoBehaviour
         yield return new WaitForSeconds(1);
         InputManager.Instance.busControllerActions.Enable();
         InputManager.Instance.AddConfirmButtonCallBack();
-        DriverViewPage();
+        //DriverViewPage();
         GenerateArrangement();
     }
 

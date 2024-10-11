@@ -25,14 +25,20 @@ public class InputManager : MonoBehaviour
     
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
             Instance = this;
         }
         playerControl = new PlayerControl();
         busControllerActions = playerControl.BusController;
         gameStartPhaseActions = playerControl.GameStartPhase;
         gameStartPhaseActions.Enable();
+
         //busControllerActions.OpenBusController.Enable();
         //busControllerActions.DriverView.Enable();
         //playerInput= GetComponent<PlayerInput>();
@@ -79,9 +85,13 @@ public class InputManager : MonoBehaviour
     public void AddInputActionCallBacks()
     {          
 
-    gameStartPhaseActions.Start.started += OnGameStart;
+        gameStartPhaseActions.Start.started += OnGameStart;
     }
 
+    public void RemoveStartCallBack()
+    {
+        gameStartPhaseActions.Start.started -= OnGameStart;
+    }
     public void AddConfirmButtonCallBack()
     {
         busControllerActions.ConfirmButton.started += OnConfirmButtonPress;
@@ -105,6 +115,8 @@ public class InputManager : MonoBehaviour
         busControllerActions.ConfirmButton.started -= OnConfirmButtonPress;
         busControllerActions.CancelButton.started -= OnCancelButtonPress;
         gameStartPhaseActions.Start.started -= OnGameStart;
+        busControllerActions.CancelButton.started -= OnCancelButtonPress;
+
     }
 
     #region Input Func
